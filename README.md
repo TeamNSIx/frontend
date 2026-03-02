@@ -3,4 +3,5 @@
 ЗАПУСК ПРОЕКТА:
 
 npm install
+
 npm run dev
