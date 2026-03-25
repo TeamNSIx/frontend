@@ -1,35 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react';
 import './App.css'
+import { ConfigProvider, Button } from 'antd';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const kfuTheme = {
+    token: {
+      colorPrimary: '#005696',
+    },
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <ConfigProvider theme={kfuTheme}>
+      <div className='App'>
+        <h1>Чат-бот КФУ</h1>
+        <div className="card">
+          <Button type="primary" size="large">
+            Начать диалог
+          </Button>
+          <p style={{ marginTop: '20px' }}>
+            Настройка окружения (Ant Design + KFU Style) завершена успешно.
+          </p>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </ConfigProvider>
+  );
 }
 
-export default App
+export default App;
