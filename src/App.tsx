@@ -1,28 +1,15 @@
 import React from 'react';
 import { ConfigProvider, Button } from 'antd';
 
-const App: React.FC = () => {
-  const kfuTheme = {
-    token: {
-      colorPrimary: '#005696',
-    },
-  };
-
+export default function App() {
   return (
-    <ConfigProvider theme={kfuTheme}>
-      <div style={{ backgroundColor: '#ffffff', color: '#000000', height: '100vh', padding: '50px' }}>
-        <h1>Чат-бот КФУ</h1>
-        <div className="card">
-          <Button type="primary" size="large">
-            Начать диалог
-          </Button>
-          <p style={{ marginTop: '20px' }}>
-            Настройка окружения (Ant Design + KFU Style) завершена успешно.
-          </p>
-        </div>
+    <ConfigProvider theme={{ token: { colorPrimary: '#005696' } }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+        <h2 style={{ color: '#000000' }}>Чат-бот КФУ</h2>
+        <Button type="primary" size="large">
+          Начать диалог
+        </Button>
       </div>
     </ConfigProvider>
   );
 }
-
-export default App;
