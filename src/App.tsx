@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css'
 import { ConfigProvider, Button } from 'antd';
 
 const App: React.FC = () => {
@@ -11,7 +10,7 @@ const App: React.FC = () => {
 
   return (
     <ConfigProvider theme={kfuTheme}>
-      <div className='App'>
+      <div style={{ backgroundColor: '#ffffff', color: '#000000', height: '100vh', padding: '50px' }}>
         <h1>Чат-бот КФУ</h1>
         <div className="card">
           <Button type="primary" size="large">
