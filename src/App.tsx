@@ -1,15 +1,13 @@
 import React from 'react';
-import { ConfigProvider, Button } from 'antd';
+import { ConfigProvider } from 'antd';
+import MainLayout from './components/MainLayout';
 
-export default function App() {
+const App: React.FC = () => {
   return (
     <ConfigProvider theme={{ token: { colorPrimary: '#005696' } }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#ffffff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-        <h2 style={{ color: '#000000' }}>Чат-бот КФУ</h2>
-        <Button type="primary" size="large">
-          Начать диалог
-        </Button>
-      </div>
+      <MainLayout />
     </ConfigProvider>
   );
 }
+
+export default App;
