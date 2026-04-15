@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, theme } from 'antd';
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
@@ -9,6 +9,7 @@ const { Text } = Typography;
 const RegisterPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { token } = theme.useToken(); 
 
   const onFinish = () => {
     setLoading(true);
@@ -34,13 +35,13 @@ const RegisterPage: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" size="large" block loading={loading} style={{ background: '#005696' }}>
+          <Button type="primary" htmlType="submit" size="large" block loading={loading} style={{ background: token.colorPrimary }}>
             Зарегистрироваться
           </Button>
         </Form.Item>
 
-        <div style={{ textAlign: 'center' }}>
-          <Text>Уже есть аккаунт? <Link to="/" style={{ color: '#005696' }}>Войти</Link></Text>
+        <div className="auth-footer">
+          <Text>Уже есть аккаунт? <Link to="/" style={{ color: token.colorPrimary }}>Войти</Link></Text>
         </div>
       </Form>
     </AuthLayout>

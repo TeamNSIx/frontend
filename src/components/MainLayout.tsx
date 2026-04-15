@@ -12,11 +12,9 @@ const MainLayout: React.FC = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
-        
         <div className="logo-container" style={{ background: token.colorPrimary, fontSize: collapsed ? '12px' : '18px' }}>
           {collapsed ? 'KFU' : 'KFU BOT'}
         </div>
-
         <Menu mode="inline" defaultSelectedKeys={['1']} items={[
           { key: '1', icon: <MessageOutlined />, label: 'Новый диалог' },
           { key: '2', icon: <UserOutlined />, label: 'Профиль' },
@@ -25,24 +23,22 @@ const MainLayout: React.FC = () => {
       </Sider>
 
       <Layout>
-        <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', borderRadius: 8, display: 'flex', flexDirection: 'column' }}>
-          
-          <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '16px', marginBottom: '16px' }}>
+        <Content className="chat-content">
+          <div className="chat-header">
             <h2 style={{ margin: 0, color: token.colorPrimary }}>Диалог с ассистентом</h2>
-            <span style={{ color: 'gray' }}>Готов ответить на ваши вопросы по учебе</span>
+            <span className="chat-subtitle">Готов ответить на ваши вопросы по учебе</span>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#f9f9f9', borderRadius: '8px', marginBottom: '16px' }}>
-            <div style={{ background: '#e6f7ff', padding: '12px', borderRadius: '8px', maxWidth: '70%', marginBottom: '8px', alignSelf: 'flex-start' }}>
+          <div className="chat-messages-area">
+            <div className="bot-message">
               Здравствуйте! Я ваш виртуальный помощник КФУ. Чем могу помочь?
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="chat-input-area">
             <Input size="large" placeholder="Введите ваш вопрос..." />
             <Button type="primary" size="large" icon={<SendOutlined />}>Отправить</Button>
           </div>
-          
         </Content>
       </Layout>
     </Layout>
