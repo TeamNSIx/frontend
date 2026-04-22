@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+import { Button, Input, Modal, message, Popconfirm } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import './KnowledgeBase.css';
+
+const { TextArea } = Input;
 
 interface KnowledgeItem {
   id: number;
@@ -20,9 +24,9 @@ const initialKnowledge: KnowledgeItem[] = [
 const KnowledgeBase: React.FC = () => {
   const [knowledge, setKnowledge] = useState<KnowledgeItem[]>(initialKnowledge);
   const [searchQuery, setSearchQuery] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ category: "", question: "", answer: "" });
-  const [isAdding, setIsAdding] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<KnowledgeItem | null>(null);
+  const [formData, setFormData] = useState({ category: "", question: "", answer: "" });
 
   const filteredKnowledge = knowledge.filter(item =>
     item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -30,45 +34,46 @@ const KnowledgeBase: React.FC = () => {
     item.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleAdd = () => {
+    setEditingItem(null);
+    setFormData({ category: "", question: "", answer: "" });
+    setIsModalOpen(true);
+  };
+
   const handleEdit = (item: KnowledgeItem) => {
-    setEditingId(item.id);
-    setEditForm({ category: item.category, question: item.question, answer: item.answer });
-    setIsAdding(false);
+    setEditingItem(item);
+    setFormData({ category: item.category, question: item.question, answer: item.answer });
+    setIsModalOpen(true);
   };
 
   const handleSave = () => {
-    if (editingId) {
+    if (!formData.category || !formData.question || !formData.answer) {
+      message.warning('Заполните все поля');
+      return;
+    }
+
+    if (editingItem) {
       setKnowledge(knowledge.map(item =>
-        item.id === editingId
-          ? { ...item, ...editForm, lastUpdated: new Date().toLocaleDateString('ru-RU') }
+        item.id === editingItem.id
+          ? { ...item, ...formData, lastUpdated: new Date().toLocaleDateString('ru-RU') }
           : item
       ));
-      setEditingId(null);
+      message.success('Элемент обновлён');
+    } else {
+      const newItem: KnowledgeItem = {
+        id: Math.max(...knowledge.map(k => k.id), 0) + 1,
+        ...formData,
+        lastUpdated: new Date().toLocaleDateString('ru-RU')
+      };
+      setKnowledge([newItem, ...knowledge]);
+      message.success('Элемент добавлен');
     }
-    setEditForm({ category: "", question: "", answer: "" });
-  };
-
-  const handleAdd = () => {
-    const newItem: KnowledgeItem = {
-      id: Math.max(...knowledge.map(k => k.id)) + 1,
-      ...editForm,
-      lastUpdated: new Date().toLocaleDateString('ru-RU')
-    };
-    setKnowledge([newItem, ...knowledge]);
-    setIsAdding(false);
-    setEditForm({ category: "", question: "", answer: "" });
+    setIsModalOpen(false);
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Вы уверены, что хотите удалить этот элемент?")) {
-      setKnowledge(knowledge.filter(item => item.id !== id));
-    }
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setIsAdding(false);
-    setEditForm({ category: "", question: "", answer: "" });
+    setKnowledge(knowledge.filter(item => item.id !== id));
+    message.success('Элемент удалён');
   };
 
   return (
@@ -78,59 +83,42 @@ const KnowledgeBase: React.FC = () => {
           <h2 className="kb-title">База знаний</h2>
           <p className="kb-subtitle">Редактирование вопросов и ответов</p>
         </div>
-        <button onClick={() => setIsAdding(true)} className="add-button">+ Добавить</button>
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} size="large">
+          Добавить
+        </Button>
       </div>
       
       <div className="search-container">
-        <input
-          type="text"
+        <Input
           placeholder="Поиск по базе знаний..."
+          prefix={<SearchOutlined />}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
+          size="large"
         />
       </div>
-
-      {isAdding && (
-        <div className="edit-form adding">
-          <h3>Новый элемент</h3>
-          <input placeholder="Категория" value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} />
-          <input placeholder="Вопрос" value={editForm.question} onChange={(e) => setEditForm({ ...editForm, question: e.target.value })} />
-          <textarea placeholder="Ответ" rows={4} value={editForm.answer} onChange={(e) => setEditForm({ ...editForm, answer: e.target.value })} />
-          <div className="form-actions">
-            <button onClick={handleAdd} className="save">Сохранить</button>
-            <button onClick={handleCancel} className="cancel">Отмена</button>
-          </div>
-        </div>
-      )}
       
       <div className="knowledge-list">
         {filteredKnowledge.map((item) => (
           <div key={item.id} className="knowledge-item">
-            {editingId === item.id ? (
-              <div className="edit-form">
-                <input value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} />
-                <input value={editForm.question} onChange={(e) => setEditForm({ ...editForm, question: e.target.value })} />
-                <textarea value={editForm.answer} onChange={(e) => setEditForm({ ...editForm, answer: e.target.value })} rows={4} />
-                <div className="form-actions">
-                  <button onClick={handleSave} className="save">Сохранить</button>
-                  <button onClick={handleCancel} className="cancel">Отмена</button>
-                </div>
+            <div className="item-header">
+              <span className="category">{item.category}</span>
+              <div className="item-actions">
+                <Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(item)} />
+                <Popconfirm
+                  title="Удалить элемент?"
+                  description="Вы уверены, что хотите удалить этот вопрос?"
+                  onConfirm={() => handleDelete(item.id)}
+                  okText="Да"
+                  cancelText="Нет"
+                >
+                  <Button type="text" danger icon={<DeleteOutlined />} />
+                </Popconfirm>
               </div>
-            ) : (
-              <>
-                <div className="item-header">
-                  <span className="category">{item.category}</span>
-                  <div className="item-actions">
-                    <button onClick={() => handleEdit(item)} className="edit">✏️</button>
-                    <button onClick={() => handleDelete(item.id)} className="delete">🗑️</button>
-                  </div>
-                </div>
-                <h3 className="question">{item.question}</h3>
-                <p className="answer">{item.answer}</p>
-                <p className="updated">Обновлено: {item.lastUpdated}</p>
-              </>
-            )}
+            </div>
+            <h3 className="question">{item.question}</h3>
+            <p className="answer">{item.answer}</p>
+            <p className="updated">Обновлено: {item.lastUpdated}</p>
           </div>
         ))}
       </div>
@@ -138,6 +126,44 @@ const KnowledgeBase: React.FC = () => {
       {filteredKnowledge.length === 0 && (
         <div className="empty">Ничего не найдено</div>
       )}
+
+      <Modal
+        title={editingItem ? "Редактировать вопрос" : "Новый вопрос"}
+        open={isModalOpen}
+        onOk={handleSave}
+        onCancel={() => setIsModalOpen(false)}
+        okText="Сохранить"
+        cancelText="Отмена"
+        width={600}
+      >
+        <div className="modal-form">
+          <div>
+            <label>Категория</label>
+            <Input
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              placeholder="Например: Поступление"
+            />
+          </div>
+          <div>
+            <label>Вопрос</label>
+            <Input
+              value={formData.question}
+              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+              placeholder="Введите вопрос"
+            />
+          </div>
+          <div>
+            <label>Ответ</label>
+            <TextArea
+              value={formData.answer}
+              onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
+              placeholder="Введите ответ"
+              rows={5}
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
