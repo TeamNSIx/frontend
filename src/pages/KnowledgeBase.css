@@ -1,0 +1,107 @@
+@import '../styles/tokens.css';
+
+.knowledge-base {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.kb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.kb-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--gray-900);
+  margin: 0 0 8px 0;
+}
+
+.kb-subtitle {
+  font-size: 20px;
+  color: var(--gray-500);
+  margin: 0;
+}
+
+.search-container {
+  margin-bottom: 24px;
+}
+
+.knowledge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.knowledge-item {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.category {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.question {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0 0 12px 0;
+}
+
+.answer {
+  font-size: 20px;
+  color: var(--gray-700);
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.updated {
+  font-size: 16px;
+  color: var(--gray-500);
+  margin: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  color: var(--gray-500);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--gray-700);
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Typography, theme } from 'antd';
 import './Auth.css'; 
 
+
 const { Title, Text } = Typography;
 
 interface AuthLayoutProps {
