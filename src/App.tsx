@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ModeratorLayout from './components/ModeratorLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import KnowledgeBase from './pages/KnowledgeBase';
+import Reviews from './pages/Reviews';
+import Documents from './pages/Documents';
 
 const App: React.FC = () => {
   return (
@@ -15,6 +17,8 @@ const App: React.FC = () => {
           <Route path="/moderator" element={<ModeratorLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="knowledge-base" element={<KnowledgeBase />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="documents" element={<Documents />} />
           </Route>
         </Routes>
       </BrowserRouter>
