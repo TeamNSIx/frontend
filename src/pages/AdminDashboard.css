@@ -1,5 +1,3 @@
-@import '../styles/tokens.css';
-
 .dashboard {
   max-width: 1400px;
   margin: 0 auto;
@@ -25,7 +23,7 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 20px;
   margin-bottom: 32px;
 }
 
@@ -34,6 +32,8 @@
   border: 1px solid var(--gray-200);
   border-radius: var(--border-radius-lg);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .stat-header {
@@ -48,10 +48,10 @@
 }
 
 .stat-trend {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border-radius: 20px;
 }
 
 .stat-trend.up {
@@ -60,13 +60,13 @@
 }
 
 .stat-label {
-  font-size: 20px;
+  font-size: 14px;
   color: var(--gray-500);
-  margin: 0 0 8px 0;
+  margin: 0;
 }
 
 .stat-value {
-  font-size: 40px;
+  font-size: 36px;
   font-weight: bold;
   color: var(--gray-900);
   margin: 0;
