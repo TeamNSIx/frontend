@@ -43,6 +43,10 @@
   margin-bottom: 16px;
 }
 
+.stat-icon {
+  font-size: 30px;
+}
+
 .stat-trend {
   font-size: 14px;
   font-weight: 500;
@@ -62,11 +66,12 @@
 }
 
 .stat-value {
-  font-size: 36px ;
+  font-size: 36px;
   font-weight: bold;
   color: var(--gray-900);
   margin: 0;
 }
+
 .charts-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
