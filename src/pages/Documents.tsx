@@ -13,6 +13,8 @@ import {
 } from '@ant-design/icons';
 import './Documents.css';
 
+const BYTES_PER_KB = 1024;
+
 interface DocumentItem {
   id: number;
   name: string;
@@ -29,15 +31,15 @@ const Documents: React.FC = () => {
   useEffect(() => {
     const saved = localStorage.getItem('documents');
     if (saved) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setDocuments(JSON.parse(saved) as DocumentItem[]);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDocuments(JSON.parse(saved) as DocumentItem[]);
     }
-    }, []);
+  }, []);
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < BYTES_PER_KB) return bytes + ' B';
+    if (bytes < BYTES_PER_KB * BYTES_PER_KB) return (bytes / BYTES_PER_KB).toFixed(1) + ' KB';
+    return (bytes / (BYTES_PER_KB * BYTES_PER_KB)).toFixed(1) + ' MB';
   };
 
   const getFileType = (filename: string): string => {
@@ -62,8 +64,6 @@ const Documents: React.FC = () => {
   };
 
   const handleFileUpload = (file: File) => {
-    console.log('Файл выбран:', file.name); 
-    
     const newDocument: DocumentItem = {
       id: Date.now(),
       name: file.name,
@@ -79,7 +79,6 @@ const Documents: React.FC = () => {
     localStorage.setItem('documents', JSON.stringify(updatedDocs));
     message.info(`Файл ${file.name} загружается...`);
 
-    // Симуляция обработки
     setTimeout(() => {
       setDocuments(prev => {
         const newDocs = prev.map(d => 
@@ -100,7 +99,6 @@ const Documents: React.FC = () => {
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('handleFileInput вызван'); 
     if (e.target.files && e.target.files[0]) {
       handleFileUpload(e.target.files[0]);
     }
@@ -108,13 +106,10 @@ const Documents: React.FC = () => {
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    console.log('Файл брошен'); 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileUpload(e.dataTransfer.files[0]);
     }
@@ -136,24 +131,28 @@ const Documents: React.FC = () => {
 
       <div className="stats-grid">
         <div className="stat-card">
+          <div className="stat-icon">📄</div>
           <div className="stat-info">
             <p className="stat-label">Всего документов</p>
             <p className="stat-value">{stats.total}</p>
           </div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon processing">⏳</div>
           <div className="stat-info">
             <p className="stat-label">В обработке</p>
             <p className="stat-value processing">{stats.processing}</p>
           </div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon success">✅</div>
           <div className="stat-info">
             <p className="stat-label">Успешно</p>
             <p className="stat-value success">{stats.success}</p>
           </div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon error">❌</div>
           <div className="stat-info">
             <p className="stat-label">Ошибки</p>
             <p className="stat-value error">{stats.error}</p>
