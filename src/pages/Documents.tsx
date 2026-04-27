@@ -131,28 +131,24 @@ const Documents: React.FC = () => {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">📄</div>
           <div className="stat-info">
             <p className="stat-label">Всего документов</p>
             <p className="stat-value">{stats.total}</p>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon processing">⏳</div>
           <div className="stat-info">
             <p className="stat-label">В обработке</p>
             <p className="stat-value processing">{stats.processing}</p>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon success">✅</div>
           <div className="stat-info">
             <p className="stat-label">Успешно</p>
             <p className="stat-value success">{stats.success}</p>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon error">❌</div>
           <div className="stat-info">
             <p className="stat-label">Ошибки</p>
             <p className="stat-value error">{stats.error}</p>

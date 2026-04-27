@@ -20,10 +20,6 @@
   gap: 16px;
 }
 
-.stat-icon {
-  font-size: 40px;
-}
-
 .stat-icon.processing { color: var(--primary-color); }
 .stat-icon.success { color: var(--success); }
 .stat-icon.error { color: var(--error); }

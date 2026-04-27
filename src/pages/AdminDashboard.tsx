@@ -15,7 +15,6 @@ const AdminDashboard: React.FC = () => {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-header">
-            <span className="stat-icon">👥</span>
             <span className="stat-trend up">+12%</span>
           </div>
           <Text type="secondary" className="stat-label">Пользователей</Text>
@@ -24,7 +23,6 @@ const AdminDashboard: React.FC = () => {
         
         <div className="stat-card">
           <div className="stat-header">
-            <span className="stat-icon">💬</span>
             <span className="stat-trend up">+8%</span>
           </div>
           <Text type="secondary" className="stat-label">Запросов сегодня</Text>
@@ -33,7 +31,6 @@ const AdminDashboard: React.FC = () => {
         
         <div className="stat-card">
           <div className="stat-header">
-            <span className="stat-icon">⭐</span>
             <span className="stat-trend up">+5%</span>
           </div>
           <Text type="secondary" className="stat-label">Средняя оценка</Text>
@@ -42,7 +39,6 @@ const AdminDashboard: React.FC = () => {
         
         <div className="stat-card">
           <div className="stat-header">
-            <span className="stat-icon">🎯</span>
             <span className="stat-trend up">+15%</span>
           </div>
           <Text type="secondary" className="stat-label">Точность ответов</Text>
