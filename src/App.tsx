@@ -10,6 +10,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import KnowledgeBase from './pages/KnowledgeBase';
 import Reviews from './pages/Reviews';
 import Documents from './pages/Documents';
+import Chat from './pages/Chat';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 const App: React.FC = () => {
   return (
@@ -18,8 +21,13 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/chat" element={<MainLayout />} />
-          
+
+          <Route element={<MainLayout />}>
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+
           <Route path="/moderator" element={<ModeratorLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="knowledge-base" element={<KnowledgeBase />} />
