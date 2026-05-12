@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Button, Input, theme } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, Button, Input, theme, Spin } from 'antd';
 import { MessageOutlined, UserOutlined, SettingOutlined, SendOutlined } from '@ant-design/icons';
 import './MainLayout.css';
 
@@ -7,7 +7,13 @@ const { Sider, Content } = Layout;
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { token } = theme.useToken();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -24,21 +30,23 @@ const MainLayout: React.FC = () => {
 
       <Layout>
         <Content className="chat-content">
-          <div className="chat-header">
-            <h2 style={{ margin: 0, color: token.colorPrimary }}>Диалог с ассистентом</h2>
-            <span className="chat-subtitle">Готов ответить на ваши вопросы по учебе</span>
-          </div>
-
-          <div className="chat-messages-area">
-            <div className="bot-message">
-              Здравствуйте! Я ваш виртуальный помощник КФУ. Чем могу помочь?
+          <Spin spinning={loading} size="large" tip="Загрузка...">
+            <div className="chat-header">
+              <h2 style={{ margin: 0, color: token.colorPrimary }}>Диалог с ассистентом</h2>
+              <span className="chat-subtitle">Готов ответить на ваши вопросы по учебе</span>
             </div>
-          </div>
 
-          <div className="chat-input-area">
-            <Input size="large" placeholder="Введите ваш вопрос..." />
-            <Button type="primary" size="large" icon={<SendOutlined />}>Отправить</Button>
-          </div>
+            <div className="chat-messages-area">
+              <div className="bot-message">
+                Здравствуйте! Я ваш виртуальный помощник КФУ. Чем могу помочь?
+              </div>
+            </div>
+
+            <div className="chat-input-area">
+              <Input size="large" placeholder="Введите ваш вопрос..." />
+              <Button type="primary" size="large" icon={<SendOutlined />}>Отправить</Button>
+            </div>
+          </Spin>
         </Content>
       </Layout>
     </Layout>

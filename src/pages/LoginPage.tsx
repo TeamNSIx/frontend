@@ -13,6 +13,7 @@ const LoginPage: React.FC = () => {
 
   const onFinish = () => {
     setLoading(true);
+    localStorage.setItem('token', 'true');
     setTimeout(() => {
       setLoading(false);
       navigate('/chat');
