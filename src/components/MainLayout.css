@@ -51,3 +51,58 @@
   display: flex;
   gap: 8px;
 }
+
+.history-section {
+  margin-top: 24px;
+  padding: 0 16px;
+  border-top: 1px solid #f0f0f0;
+}
+.history-header {
+  padding: 12px 0;
+  font-weight: 500;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.history-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.history-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  background: #fafafa;
+}
+.history-item.active {
+  background: #e6f7ff;
+  border-left: 3px solid #005696;
+}
+.history-title {
+  font-weight: 500;
+}
+.history-date {
+  font-size: 11px;
+  color: #999;
+}
+.user-message {
+  background: #005696;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  max-width: 70%;
+  margin-bottom: 8px;
+  align-self: flex-end;
+}
+.chat-messages-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-collapsed {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}

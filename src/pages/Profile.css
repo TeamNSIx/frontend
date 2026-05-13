@@ -1,0 +1,20 @@
+.profile-page {
+  margin: 24px 16px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-role {
+  color: #8c8c8c;
+  margin-top: 4px;
+}
