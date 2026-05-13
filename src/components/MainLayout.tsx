@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Button, Input, theme, Spin } from 'antd';
-import { MessageOutlined, UserOutlined, SettingOutlined, SendOutlined } from '@ant-design/icons';
+import { MessageOutlined, UserOutlined, SettingOutlined, SendOutlined, LogoutOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import './MainLayout.css';
 
 const { Sider, Content } = Layout;
@@ -9,11 +10,19 @@ const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
   const { token } = theme.useToken();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    if (key === 'logout') {
+      localStorage.removeItem('token');
+      navigate('/');
+    }
+  };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -21,10 +30,11 @@ const MainLayout: React.FC = () => {
         <div className="logo-container" style={{ background: token.colorPrimary, fontSize: collapsed ? '12px' : '18px' }}>
           {collapsed ? 'KFU' : 'KFU BOT'}
         </div>
-        <Menu mode="inline" defaultSelectedKeys={['1']} items={[
+        <Menu mode="inline" defaultSelectedKeys={['1']} onClick={handleMenuClick} items={[
           { key: '1', icon: <MessageOutlined />, label: 'Новый диалог' },
           { key: '2', icon: <UserOutlined />, label: 'Профиль' },
           { key: '3', icon: <SettingOutlined />, label: 'Настройки' },
+          { key: 'logout', icon: <LogoutOutlined />, label: 'Выйти', danger: true },
         ]} />
       </Sider>
 
