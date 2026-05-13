@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, message, Modal, Rate } from 'antd';
+import { Layout, Menu, Input, message, Modal, Rate } from 'antd';
 import { MessageOutlined, UserOutlined, SettingOutlined, HistoryOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
 import './MainLayout.css';
@@ -20,7 +20,6 @@ interface DialogType {
 
 const { Sider, Content } = Layout;
 const { TextArea } = Input;
-import { Input } from 'antd';
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();

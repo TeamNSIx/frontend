@@ -19,31 +19,36 @@ interface DialogType {
 const { TextArea } = Input;
 
 const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<MessageType[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [currentDialogId, setCurrentDialogId] = useState<number | null>(null);
-  const [dialogs, setDialogs] = useState<DialogType[]>([]);
+  const [dialogs] = useState<DialogType[]>(() => {
+    const saved = localStorage.getItem('chat_dialogs');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  useEffect(() => {
+  const [currentDialogId] = useState<number | null>(() => {
     const saved = localStorage.getItem('chat_dialogs');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDialogs(parsed);
-      if (parsed.length) {
-        setCurrentDialogId(parsed[0].id);
-        setMessages((parsed[0] as DialogType).messages || []);
-      }
+      const parsed: DialogType[] = JSON.parse(saved);
+      return parsed.length ? parsed[0].id : null;
     }
-  }, []);
+    return null;
+  });
+
+  const [messages, setMessages] = useState<MessageType[]>(() => {
+    const saved = localStorage.getItem('chat_dialogs');
+    if (saved) {
+      const parsed: DialogType[] = JSON.parse(saved);
+      return parsed.length ? parsed[0].messages : [];
+    }
+    return [];
+  });
+
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     if (currentDialogId && dialogs.length) {
       const updatedDialogs = dialogs.map(d =>
         d.id === currentDialogId ? { ...d, messages, lastUpdated: new Date() } : d
       );
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDialogs(updatedDialogs);
       localStorage.setItem('chat_dialogs', JSON.stringify(updatedDialogs));
     }
   }, [messages, currentDialogId, dialogs]);
