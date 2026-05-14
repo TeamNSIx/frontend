@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, theme } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 
 const { Text } = Typography;
@@ -9,10 +9,17 @@ const { Text } = Typography;
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { token } = theme.useToken(); 
+  const { token } = theme.useToken();
+
+  const isAuth = localStorage.getItem('token') === 'true';
+
+  if (isAuth) {
+    return <Navigate to="/chat" replace />;
+  }
 
   const onFinish = () => {
     setLoading(true);
+    localStorage.setItem('token', 'true');
     setTimeout(() => {
       setLoading(false);
       navigate('/chat');
