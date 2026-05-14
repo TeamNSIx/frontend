@@ -6,6 +6,11 @@ import RegisterPage from './pages/RegisterPage';
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFoundPage from './pages/NotFoundPage';
+import AdminDashboard from './pages/AdminDashboard';
+import KnowledgeBase from './pages/KnowledgeBase';
+import Reviews from './pages/Reviews';
+import Documents from './pages/Documents';
+import ModeratorLayout from './components/ModeratorLayout';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +24,16 @@ const App: React.FC = () => {
               <MainLayout />
             </ProtectedRoute>
           } />
+          <Route path="/moderator" element={
+            <ProtectedRoute>
+              <ModeratorLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<AdminDashboard />} />
+            <Route path="knowledge-base" element={<KnowledgeBase />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="documents" element={<Documents />} />
+          </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
