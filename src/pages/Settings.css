@@ -1,0 +1,24 @@
+.settings-page {
+  margin: 24px 16px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.setting-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.setting-icon {
+  font-size: 18px;
+  color: #005696;
+}

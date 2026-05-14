@@ -11,6 +11,9 @@ import KnowledgeBase from './pages/KnowledgeBase';
 import Reviews from './pages/Reviews';
 import Documents from './pages/Documents';
 import ModeratorLayout from './components/ModeratorLayout';
+import Chat from './pages/Chat';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 const App: React.FC = () => {
   return (
@@ -19,16 +22,12 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/chat" element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          } />
-          <Route path="/moderator" element={
-            <ProtectedRoute>
-              <ModeratorLayout />
-            </ProtectedRoute>
-          }>
+          <Route path="/chat" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+             <Route index element={<Chat />} />
+          </Route>
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/moderator" element={<ProtectedRoute><ModeratorLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="knowledge-base" element={<KnowledgeBase />} />
             <Route path="reviews" element={<Reviews />} />

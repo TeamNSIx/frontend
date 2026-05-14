@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Select } from 'antd';
-import { StarFilled, StarOutlined, LikeOutlined, DislikeOutlined, FilterOutlined } from '@ant-design/icons';
+import { StarFilled, StarOutlined, LikeOutlined, FilterOutlined } from '@ant-design/icons';
 import './Reviews.css';
 
 const { Option } = Select;
@@ -15,85 +15,20 @@ interface Review {
   helpful: boolean;
 }
 
-const reviewsData: Review[] = [
-  {
-    id: 1,
-    user: "Студент #1247",
-    rating: 5,
-    comment: "Очень помогло найти информацию о поступлении. Бот отвечает быстро и точно!",
-    date: "16.04.2026 14:32",
-    category: "Поступление",
-    helpful: true
-  },
-  {
-    id: 2,
-    user: "Студент #1246",
-    rating: 4,
-    comment: "Удобно смотреть расписание через бота, но хотелось бы больше деталей о преподавателях.",
-    date: "16.04.2026 14:28",
-    category: "Учеба",
-    helpful: true
-  },
-  {
-    id: 3,
-    user: "Студент #1245",
-    rating: 5,
-    comment: "Отличный сервис! Нашел всю информацию об общежитии за пару минут.",
-    date: "16.04.2026 14:15",
-    category: "Общежитие",
-    helpful: true
-  },
-  {
-    id: 4,
-    user: "Студент #1244",
-    rating: 3,
-    comment: "Не смог найти информацию о дополнительных стипендиях. Остальное норм.",
-    date: "16.04.2026 14:02",
-    category: "Финансы",
-    helpful: false
-  },
-  {
-    id: 5,
-    user: "Студент #1243",
-    rating: 5,
-    comment: "Бот работает отлично! Быстро нашел нужную информацию о библиотеке.",
-    date: "16.04.2026 13:45",
-    category: "Библиотека",
-    helpful: true
-  },
-  {
-    id: 6,
-    user: "Студент #1242",
-    rating: 4,
-    comment: "Хороший помощник для студентов. Иногда ответы слишком общие.",
-    date: "16.04.2026 13:30",
-    category: "Общее",
-    helpful: true
-  },
-  {
-    id: 7,
-    user: "Студент #1241",
-    rating: 2,
-    comment: "Не понял как пользоваться. Нужны более понятные инструкции.",
-    date: "16.04.2026 13:15",
-    category: "Общее",
-    helpful: false
-  },
-  {
-    id: 8,
-    user: "Студент #1240",
-    rating: 5,
-    comment: "Супер! Очень удобно, что можно быстро найти любую информацию.",
-    date: "16.04.2026 12:58",
-    category: "Общее",
-    helpful: true
-  }
-];
-
 const Reviews: React.FC = () => {
-  const [reviews] = useState<Review[]>(reviewsData);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [filterRating, setFilterRating] = useState<number | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>("Все");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('reviews');
+    if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setReviews(JSON.parse(saved));
+    }
+    setLoading(false);
+  }, []);
 
   const categories = ["Все", ...Array.from(new Set(reviews.map(r => r.category)))];
 
@@ -103,12 +38,21 @@ const Reviews: React.FC = () => {
     return true;
   });
 
-  const averageRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+  const averageRating = reviews.length
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : "0";
+
   const ratingDistribution = [5, 4, 3, 2, 1].map(rating => ({
     rating,
     count: reviews.filter(r => r.rating === rating).length,
-    percentage: (reviews.filter(r => r.rating === rating).length / reviews.length) * 100
+    percentage: reviews.length
+      ? (reviews.filter(r => r.rating === rating).length / reviews.length) * 100
+      : 0
   }));
+
+  if (loading) {
+    return <div className="reviews-page">Загрузка...</div>;
+  }
 
   return (
     <div className="reviews-page">
@@ -182,41 +126,40 @@ const Reviews: React.FC = () => {
       </div>
 
       <div className="reviews-list">
-        {filteredReviews.map(review => (
-          <div key={review.id} className="review-card">
-            <div className="review-header">
-              <div>
-                <div className="review-user">{review.user}</div>
-                <div className="review-stars">
-                  {[...Array(5)].map((_, i) => (
-                    i < review.rating ? 
-                      <StarFilled key={i} className="star filled" /> : 
-                      <StarOutlined key={i} className="star" />
-                  ))}
+        {filteredReviews.length === 0 ? (
+          <div className="empty-state">
+            <p>Пока нет отзывов от пользователей</p>
+            <p style={{ fontSize: 14, marginTop: 8 }}>
+              Когда пользователи оставят отзывы в чате — они появятся здесь
+            </p>
+          </div>
+        ) : (
+          filteredReviews.map(review => (
+            <div key={review.id} className="review-card">
+              <div className="review-header">
+                <div>
+                  <div className="review-user">{review.user}</div>
+                  <div className="review-stars">
+                    {[...Array(5)].map((_, i) => (
+                      i < review.rating ? 
+                        <StarFilled key={i} className="star filled" /> : 
+                        <StarOutlined key={i} className="star" />
+                    ))}
+                  </div>
                 </div>
+                <div className="review-date">{review.date}</div>
               </div>
-              <div className="review-date">{review.date}</div>
-            </div>
-            <div className="review-category">{review.category}</div>
-            <p className="review-comment">{review.comment}</p>
-            <div className="review-helpful">
-              {review.helpful ? (
+              <div className="review-category">{review.category}</div>
+              <p className="review-comment">{review.comment}</p>
+              <div className="review-helpful">
                 <div className="helpful-badge positive">
                   <LikeOutlined /> Полезный отзыв
                 </div>
-              ) : (
-                <div className="helpful-badge negative">
-                  <DislikeOutlined /> Требует внимания
-                </div>
-              )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
-
-      {filteredReviews.length === 0 && (
-        <div className="empty-state">Нет отзывов с выбранными фильтрами</div>
-      )}
     </div>
   );
 };
