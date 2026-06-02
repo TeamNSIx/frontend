@@ -1,169 +1,108 @@
 import React, { useState } from 'react';
-import { Button, Input, Modal, message, Popconfirm } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
-import './KnowledgeBase.css';
+import { Input, Button, message } from 'antd';
 
 const { TextArea } = Input;
-
-interface KnowledgeItem {
-  id: number;
-  category: string;
-  question: string;
-  answer: string;
-  lastUpdated: string;
-}
-
-const initialKnowledge: KnowledgeItem[] = [
-  { id: 1, category: "Поступление", question: "Как подать документы на поступление?", answer: "Для подачи документов необходимо зарегистрироваться на портале абитуриента КФУ, заполнить анкету и загрузить отсканированные копии документов об образовании.", lastUpdated: "15.04.2026" },
-  { id: 2, category: "Библиотека", question: "Где находится библиотека?", answer: "Научная библиотека им. Н.И. Лобачевского расположена в главном корпусе КФУ по адресу: ул. Кремлевская, 18.", lastUpdated: "14.04.2026" },
-  { id: 3, category: "Учеба", question: "Как посмотреть расписание занятий?", answer: "Расписание доступно в личном кабинете студента на портале edu.kpfu.ru", lastUpdated: "13.04.2026" },
-  { id: 4, category: "Финансы", question: "Когда выплачивается стипендия?", answer: "Стипендия начисляется до 25 числа текущего месяца.", lastUpdated: "12.04.2026" },
-  { id: 5, category: "Общежитие", question: "Как получить место в общежитии?", answer: "Для получения места в общежитии необходимо подать заявление в отдел по социальной работе.", lastUpdated: "11.04.2026" }
-];
+const BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
 const KnowledgeBase: React.FC = () => {
-  const [knowledge, setKnowledge] = useState<KnowledgeItem[]>(initialKnowledge);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<KnowledgeItem | null>(null);
-  const [formData, setFormData] = useState({ category: "", question: "", answer: "" });
+  const [fragmentText, setFragmentText] = useState('');
+  const [urlValue, setUrlValue] = useState('');
+  
+  // Достаем токен для авторизации админских запросов
+  const token = localStorage.getItem('token');
 
-  const filteredKnowledge = knowledge.filter(item =>
-    item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleAdd = () => {
-    setEditingItem(null);
-    setFormData({ category: "", question: "", answer: "" });
-    setIsModalOpen(true);
-  };
-
-  const handleEdit = (item: KnowledgeItem) => {
-    setEditingItem(item);
-    setFormData({ category: item.category, question: item.question, answer: item.answer });
-    setIsModalOpen(true);
-  };
-
-  const handleSave = () => {
-    if (!formData.category || !formData.question || !formData.answer) {
-      message.warning('Заполните все поля');
+  const handleAddFragment = async () => {
+    if (!fragmentText.trim()) {
+      message.warning('Введите текст фрагмента');
       return;
     }
-
-    if (editingItem) {
-      setKnowledge(knowledge.map(item =>
-        item.id === editingItem.id
-          ? { ...item, ...formData, lastUpdated: new Date().toLocaleDateString('ru-RU') }
-          : item
-      ));
-      message.success('Элемент обновлён');
-    } else {
-      const newItem: KnowledgeItem = {
-        id: Math.max(...knowledge.map(k => k.id), 0) + 1,
-        ...formData,
-        lastUpdated: new Date().toLocaleDateString('ru-RU')
-      };
-      setKnowledge([newItem, ...knowledge]);
-      message.success('Элемент добавлен');
+    
+    try {
+      const response = await fetch(`${BASE_URL}/knowledge/fragments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ content: fragmentText }) 
+      });
+      
+      if (response.ok) {
+        message.success('Фрагмент успешно добавлен в базу знаний');
+        setFragmentText('');
+      } else {
+        message.error('Ошибка при добавлении фрагмента');
+      }
+    } catch (e) {
+      console.error(e);
+      message.error('Сетевая ошибка');
     }
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id: number) => {
-    setKnowledge(knowledge.filter(item => item.id !== id));
-    message.success('Элемент удалён');
+  const handleAddUrl = async () => {
+    if (!urlValue.trim()) {
+      message.warning('Введите URL');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`${BASE_URL}/knowledge/sources/ingest-url`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ url: urlValue })
+      });
+      
+      if (response.ok) {
+        message.success('URL успешно загружен и обрабатывается');
+        setUrlValue('');
+      } else {
+        message.error('Ошибка при загрузке URL');
+      }
+    } catch (e) {
+      console.error(e);
+      message.error('Сетевая ошибка');
+    }
   };
 
   return (
-    <div className="knowledge-base">
-      <div className="kb-header">
-        <div>
-          <h2 className="kb-title">База знаний</h2>
-          <p className="kb-subtitle">Редактирование вопросов и ответов</p>
-        </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} size="large">
-          Добавить
+    <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', maxWidth: '800px', margin: '0 auto' }}>
+      <h2 style={{ marginBottom: '24px' }}>Управление базой знаний (Админка)</h2>
+      
+      <div style={{ marginBottom: '40px' }}>
+        <h3>Добавить текстовый фрагмент</h3>
+        <p style={{ color: '#666', marginBottom: '12px' }}>
+          Вставьте текст из документов КФУ (правила, расписание, инструкции).
+        </p>
+        <TextArea 
+          rows={6} 
+          value={fragmentText} 
+          onChange={(e) => setFragmentText(e.target.value)} 
+          placeholder="Вставьте текст сюда..."
+          style={{ marginBottom: '16px' }}
+        />
+        <Button type="primary" onClick={handleAddFragment}>
+          Добавить фрагмент
         </Button>
       </div>
-      
-      <div className="search-container">
-        <Input
-          placeholder="Поиск по базе знаний..."
-          prefix={<SearchOutlined />}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          size="large"
-        />
-      </div>
-      
-      <div className="knowledge-list">
-        {filteredKnowledge.map((item) => (
-          <div key={item.id} className="knowledge-item">
-            <div className="item-header">
-              <span className="category">{item.category}</span>
-              <div className="item-actions">
-                <Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(item)} />
-                <Popconfirm
-                  title="Удалить элемент?"
-                  description="Вы уверены, что хотите удалить этот вопрос?"
-                  onConfirm={() => handleDelete(item.id)}
-                  okText="Да"
-                  cancelText="Нет"
-                >
-                  <Button type="text" danger icon={<DeleteOutlined />} />
-                </Popconfirm>
-              </div>
-            </div>
-            <h3 className="question">{item.question}</h3>
-            <p className="answer">{item.answer}</p>
-            <p className="updated">Обновлено: {item.lastUpdated}</p>
-          </div>
-        ))}
-      </div>
-      
-      {filteredKnowledge.length === 0 && (
-        <div className="empty">Ничего не найдено</div>
-      )}
 
-      <Modal
-        title={editingItem ? "Редактировать вопрос" : "Новый вопрос"}
-        open={isModalOpen}
-        onOk={handleSave}
-        onCancel={() => setIsModalOpen(false)}
-        okText="Сохранить"
-        cancelText="Отмена"
-        width={600}
-      >
-        <div className="modal-form">
-          <div>
-            <label>Категория</label>
-            <Input
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              placeholder="Например: Поступление"
-            />
-          </div>
-          <div>
-            <label>Вопрос</label>
-            <Input
-              value={formData.question}
-              onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-              placeholder="Введите вопрос"
-            />
-          </div>
-          <div>
-            <label>Ответ</label>
-            <TextArea
-              value={formData.answer}
-              onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-              placeholder="Введите ответ"
-              rows={5}
-            />
-          </div>
-        </div>
-      </Modal>
+      <div style={{ borderTop: '1px solid #eee', paddingTop: '32px' }}>
+        <h3>Добавить веб-источник</h3>
+        <p style={{ color: '#666', marginBottom: '12px' }}>
+          Укажите прямую ссылку на страницу сайта университета, чтобы бот её изучил.
+        </p>
+        <Input 
+          value={urlValue} 
+          onChange={(e) => setUrlValue(e.target.value)} 
+          placeholder="https://kpfu.ru/..."
+          style={{ marginBottom: '16px' }}
+        />
+        <Button type="primary" onClick={handleAddUrl}>
+          Загрузить по ссылке
+        </Button>
+      </div>
     </div>
   );
 };
