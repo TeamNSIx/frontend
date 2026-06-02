@@ -1,7 +1,6 @@
 import React from 'react';
-import { Card, Typography, theme } from 'antd';
-import './Auth.css'; 
-
+import { Typography, theme } from 'antd';
+import './Auth.css';
 
 const { Title, Text } = Typography;
 
@@ -12,17 +11,49 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ title, subtitle, children }) => {
-  const { token } = theme.useToken(); 
+  const { token } = theme.useToken();
 
   return (
-    <div className="auth-container">
-      <Card className="auth-card">
-        <div className="auth-header">
-          <Title level={3} style={{ color: token.colorPrimary, margin: 0 }}>{title}</Title>
+    <div className="auth-layout" style={{ 
+      background: token.colorBgLayout, 
+      position: 'relative', 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      minHeight: '100vh',
+      width: '100%'
+    }}>
+      <div style={{ 
+        position: 'absolute', 
+        top: 20, 
+        left: 20, 
+        background: token.colorPrimary, 
+        color: '#fff', 
+        padding: '8px 16px', 
+        borderRadius: '6px', 
+        fontSize: '16px', 
+        fontWeight: 'bold',
+        zIndex: 10
+      }}>
+        KFU BOT
+      </div>
+
+      <div className="auth-card" style={{ 
+        background: token.colorBgContainer,
+        padding: '40px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        width: '100%',
+        maxWidth: '400px',
+        zIndex: 1,
+        textAlign: 'center'
+      }}>
+        <div className="auth-header" style={{ marginBottom: '24px' }}>
+          <Title level={2} style={{ margin: 0 }}>{title}</Title>
           <Text type="secondary">{subtitle}</Text>
         </div>
         {children}
-      </Card>
+      </div>
     </div>
   );
 };

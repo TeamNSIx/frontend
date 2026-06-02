@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, theme, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import { authAPI } from '../services/api';
 
@@ -12,15 +12,19 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { token } = theme.useToken();
 
+  const isAuth = !!localStorage.getItem('token');
+
+  if (isAuth) {
+    return <Navigate to="/chat" replace />;
+  }
+
   const onFinish = async (values: { email: string; password: string }) => {
     setLoading(true);
     try {
-      // 1. Логин
       const data = await authAPI.login(values.email, values.password);
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('refresh_token', data.refresh_token);
 
-      // 2. Получение user_id
       const user = await authAPI.getMe();
       localStorage.setItem('user_id', user.id.toString());
 

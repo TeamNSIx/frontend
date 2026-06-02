@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Input, message, Modal, Rate } from 'antd';
-import { MessageOutlined, UserOutlined, SettingOutlined, HistoryOutlined } from '@ant-design/icons';
+import { MessageOutlined, UserOutlined, SettingOutlined, HistoryOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
 import './MainLayout.css';
 
@@ -48,12 +48,23 @@ const MainLayout: React.FC = () => {
     if (dialogs.length) localStorage.setItem('chat_dialogs', JSON.stringify(dialogs));
   }, [dialogs]);
 
-  const handleNewDialog = () => {
-    const newDialog = { id: Date.now(), title: `Диалог ${dialogs.length + 1}`, messages: [], lastUpdated: new Date() };
-    setDialogs(prev => [newDialog, ...prev]);
-    setCurrentDialogId(newDialog.id);
-    message.success('Новый диалог создан');
-    navigate('/chat');
+  const handleMenuClick = ({ key }: { key: string }) => {
+    if (key === 'logout') {
+      localStorage.removeItem('token');
+      navigate('/');
+    } else if (key === 'profile') {
+      navigate('/profile');
+    } else if (key === 'settings') {
+      navigate('/settings');
+    } else if (key === '1') {
+      navigate('/chat');
+    } else if (key === 'new-dialog') {
+      const newDialog = { id: Date.now(), title: `Диалог ${dialogs.length + 1}`, messages: [], lastUpdated: new Date() };
+      setDialogs(prev => [newDialog, ...prev]);
+      setCurrentDialogId(newDialog.id);
+      message.success('Новый диалог создан');
+      navigate('/chat');
+    }
   };
 
   const handleSelectDialog = (id: number) => {
@@ -91,11 +102,13 @@ const MainLayout: React.FC = () => {
           {collapsed ? 'KFU' : 'KFU BOT'}
         </div>
 
-        <Menu mode="inline" defaultSelectedKeys={['1']}>
-          <Menu.Item key="1" icon={<MessageOutlined />} onClick={handleNewDialog}>Новый диалог</Menu.Item>
-          <Menu.Item key="2" icon={<UserOutlined />} onClick={() => navigate('/profile')}>Профиль</Menu.Item>
-          <Menu.Item key="3" icon={<SettingOutlined />} onClick={() => navigate('/settings')}>Настройки</Menu.Item>
-        </Menu>
+        <Menu mode="inline" defaultSelectedKeys={['1']} onClick={handleMenuClick} items={[
+          { key: '1', icon: <MessageOutlined />, label: 'Чаты' },
+          { key: 'new-dialog', icon: <MessageOutlined />, label: 'Новый диалог' },
+          { key: 'profile', icon: <UserOutlined />, label: 'Профиль' },
+          { key: 'settings', icon: <SettingOutlined />, label: 'Настройки' },
+          { key: 'logout', icon: <LogoutOutlined />, label: 'Выйти', danger: true },
+        ]} />
 
         {!collapsed && (
           <div className="history-section">

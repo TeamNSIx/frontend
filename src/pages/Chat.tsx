@@ -9,69 +9,84 @@ interface MessageType {
   timestamp: Date;
 }
 
-interface DialogType {
-  id: number;
-  title: string;
-  messages: MessageType[];
-  lastUpdated: Date;
-}
-
 const { TextArea } = Input;
+const BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
 const Chat: React.FC = () => {
-  const [dialogs] = useState<DialogType[]>(() => {
-    const saved = localStorage.getItem('chat_dialogs');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [currentDialogId] = useState<number | null>(() => {
-    const saved = localStorage.getItem('chat_dialogs');
-    if (saved) {
-      const parsed: DialogType[] = JSON.parse(saved);
-      return parsed.length ? parsed[0].id : null;
-    }
-    return null;
-  });
-
-  const [messages, setMessages] = useState<MessageType[]>(() => {
-    const saved = localStorage.getItem('chat_dialogs');
-    if (saved) {
-      const parsed: DialogType[] = JSON.parse(saved);
-      return parsed.length ? parsed[0].messages : [];
-    }
-    return [];
-  });
-
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [backendChatId, setBackendChatId] = useState<string | null>(null);
+
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('user_id');
 
   useEffect(() => {
-    if (currentDialogId && dialogs.length) {
-      const updatedDialogs = dialogs.map(d =>
-        d.id === currentDialogId ? { ...d, messages, lastUpdated: new Date() } : d
-      );
-      localStorage.setItem('chat_dialogs', JSON.stringify(updatedDialogs));
-    }
-  }, [messages, currentDialogId, dialogs]);
+    const initChat = async () => {
+      if (!token || !userId) return;
+      
+      try {
+        const response = await fetch(`${BASE_URL}/conversations/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            title: "Новый чат",
+            is_finished: false
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setBackendChatId(data.id);
+        }
+      } catch (e) {
+        console.error("Ошибка при создании чата:", e);
+      }
+    };
+    
+    initChat();
+  }, [token, userId]);
 
-  const sendMessage = () => {
-    if (!inputValue.trim()) return;
+  const sendMessage = async () => {
+    if (!inputValue.trim() || !backendChatId || !token) return;
+
     const userMsg: MessageType = {
       id: Date.now(),
       text: inputValue,
       sender: 'user',
       timestamp: new Date(),
     };
+
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
-    setTimeout(() => {
-      const botMsg: MessageType = {
-        id: Date.now() + 1,
-        text: 'Спасибо за ваш вопрос! Я обрабатываю информацию и скоро отвечу.',
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, botMsg]);
-    }, 500);
+
+    try {
+      const response = await fetch(`${BASE_URL}/conversations/${backendChatId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ content: userMsg.text })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        const botMsg: MessageType = {
+          id: Date.now() + 1,
+          text: data.bot_message.content,
+          sender: 'bot',
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, botMsg]);
+      }
+    } catch (e) {
+      console.error("Ошибка при отправке сообщения:", e);
+    }
   };
 
   return (
