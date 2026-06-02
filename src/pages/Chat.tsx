@@ -17,12 +17,10 @@ const Chat: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [backendChatId, setBackendChatId] = useState<string | null>(null);
 
-  // Достаем токен и ID пользователя, которые должна была сохранить Полина при логине
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('user_id');
 
   useEffect(() => {
-    // Автоматически создаем сессию чата на бэкенде при открытии страницы
     const initChat = async () => {
       if (!token || !userId) return;
       
@@ -55,7 +53,6 @@ const Chat: React.FC = () => {
   const sendMessage = async () => {
     if (!inputValue.trim() || !backendChatId || !token) return;
 
-    // Отрисовываем сообщение юзера сразу
     const userMsg: MessageType = {
       id: Date.now(),
       text: inputValue,
@@ -66,7 +63,6 @@ const Chat: React.FC = () => {
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
 
-    // Отправляем запрос на бэкенд Даниса
     try {
       const response = await fetch(`${BASE_URL}/conversations/${backendChatId}/messages`, {
         method: 'POST',
@@ -80,7 +76,6 @@ const Chat: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         
-        // Отрисовываем ответ от бота
         const botMsg: MessageType = {
           id: Date.now() + 1,
           text: data.bot_message.content,
