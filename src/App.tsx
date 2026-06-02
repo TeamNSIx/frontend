@@ -22,8 +22,9 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+
           <Route path="/chat" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-             <Route index element={<Chat />} />
+            <Route index element={<Chat />} />
           </Route>
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

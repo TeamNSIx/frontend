@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Typography, theme } from 'antd';
+import { Form, Input, Button, Typography, theme, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
+import { authAPI } from '../services/api';
 
 const { Text } = Typography;
 
@@ -11,19 +12,30 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { token } = theme.useToken();
 
-  const isAuth = localStorage.getItem('token') === 'true';
+  const isAuth = !!localStorage.getItem('token');
 
   if (isAuth) {
     return <Navigate to="/chat" replace />;
   }
 
-  const onFinish = () => {
+  const onFinish = async (values: { email: string; password: string }) => {
     setLoading(true);
-    localStorage.setItem('token', 'true');
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const data = await authAPI.login(values.email, values.password);
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+
+      const user = await authAPI.getMe();
+      localStorage.setItem('user_id', user.id.toString());
+
+      message.success('Вход выполнен успешно');
       navigate('/chat');
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+      message.error('Ошибка входа. Проверьте email и пароль');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
